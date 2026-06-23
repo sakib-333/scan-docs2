@@ -1,14 +1,60 @@
 import React, { useState } from 'react';
 
+interface ScannerImage {
+      src: string;
+      getBase64NoPrefix?: () => string;
+}
+
+interface ScannedImage {
+      id: string;
+      src: string;
+      base64: string | null;
+}
+
+interface ScannerOptions {
+      use_asprise_dialog?: boolean;
+      show_scanner_ui?: boolean;
+      twain_cap_setting?: Record<string, string | number | boolean>;
+      output_settings?: Array<{
+            type: string;
+            format: string;
+      }>;
+}
+
+type ScannerResponseCallback = (
+      successful: boolean,
+      mesg?: string,
+      response?: unknown
+) => void;
+
+interface ScannerWindow {
+      scan: (
+            callback: ScannerResponseCallback,
+            options: ScannerOptions
+      ) => void;
+
+      getScannedImages: (
+            response: unknown,
+            returnBase64: boolean,
+            keepOriginal: boolean
+      ) => ScannerImage[];
+}
+
+declare global {
+      interface Window {
+            scanner?: ScannerWindow;
+      }
+}
+
 const App: React.FC = () => {
       const [scannedImages, setScannedImages] = useState<ScannedImage[]>([]);
       const [isScanning, setIsScanning] = useState<boolean>(false);
       const [errorMessage, setErrorMessage] = useState<string>('');
 
       const handleScanResponse: ScannerResponseCallback = (
-            successful,
-            mesg,
-            response
+            successful: boolean,
+            mesg?: string,
+            response?: unknown
       ) => {
             setIsScanning(false);
 
@@ -45,7 +91,7 @@ const App: React.FC = () => {
                   return;
             }
 
-            const formattedImages = images.map((image, index) => {
+            const formattedImages: ScannedImage[] = images.map((image, index) => {
                   return {
                         id: `${Date.now()}-${index}`,
                         src: image.src,
