@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 
-const App = () => {
-      const [scannedImages, setScannedImages] = useState([]);
-      const [isScanning, setIsScanning] = useState(false);
-      const [errorMessage, setErrorMessage] = useState('');
+const App: React.FC = () => {
+      const [scannedImages, setScannedImages] = useState<ScannedImage[]>([]);
+      const [isScanning, setIsScanning] = useState<boolean>(false);
+      const [errorMessage, setErrorMessage] = useState<string>('');
 
-      const handleScanResponse = (successful, mesg, response) => {
+      const handleScanResponse: ScannerResponseCallback = (
+            successful,
+            mesg,
+            response
+      ) => {
             setIsScanning(false);
 
             if (!successful) {
@@ -157,7 +161,7 @@ const App = () => {
       );
 };
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
       container: {
             padding: 24,
             maxWidth: 900,
